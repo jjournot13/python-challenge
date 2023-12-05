@@ -4,40 +4,88 @@ import os
 # Import module for reading CSV files
 import csv
 
-csvpath = os.path.join('..', 'Resources', 'budget_data.csv')
+csvpath = os.path.join('Resources', 'budget_data.csv')
+
+# Set variables
+month_counter = 0
+net_profit_loss = 0
+greatest_increase_profits = 0
+greatest_increase_month = ""
+greatest_decrease_profits = 0
+greatest_decrease_month = ""
+previous_month_revenue = 0
+current_revenue_change = 0
+total_revenue_change = 0
 
 # Read cvs file
 with open(csvpath) as csvfile:
 
-     # CSV reader specifies delimiter and variable that holds contents
+     # Specify delimiter and variable that holds contents
      csvreader = csv.reader(csvfile, delimiter=',')
 
-     print(csvreader)
+     # Skip first row
+     next(csvreader)
 
-     # Read the header row first (skip this step if there is no header)
-#     csv_header = next(csvreader)
-#     print(f"CSV Header: {csv_header}")
+     #Set variable for first month
+     first_month = 0     
 
-#     # Read each row of data after the header
-#     for row in csvreader:
-#         print(row)
+     # Read each row of data after the header
+     for row in csvreader:
+
+        # Count the total number of months included in the dataset    
+        month_counter = month_counter + 1
+     
+        # Calculate the net total amount of "Profit/Losses" over the entire period
+        net_profit_loss += int(row[1])
+
+        # Added revenue change over the entire period
+        current_revenue_change = int(row[1]) - previous_month_revenue
+        total_revenue_change += current_revenue_change
+        if first_month == 0:
+            first_month = current_revenue_change
+
+        # Calculate greatest increase in profits over the entire period
+        if current_revenue_change > greatest_increase_profits:
+            greatest_increase_profits = current_revenue_change
+            greatest_increase_month = row[0]
+
+        # Calculate greatest decrease in profits over the entire period
+        if current_revenue_change < greatest_decrease_profits:
+            greatest_decrease_profits = current_revenue_change
+            greatest_decrease_month = row[0]
+
+        previous_month_revenue = int(row[1])
 
 
-# The total number of months included in the dataset
+print("Financial Analysis")
+print("----------------------------")
 
-# The net total amount of "Profit/Losses" over the entire period
+# Print the number of months in the dataset
+print("Total Months: ", month_counter,sep='')
+
+# Print the net total amount of "Profit/Losses" over the entire period
+print("Total: ","$",net_profit_loss,sep='')
 
 # The changes in "Profit/Losses" over the entire period, and then the average of those changes
+print("Average Change: ","$",round((total_revenue_change - first_month)/(month_counter - 1),2),sep='')
 
-# The greatest increase in profits (date and amount) over the entire period
+# Print the greatest increase in profits (date and amount) over the entire period
+print("Greatest Increase in Profits: ",greatest_increase_month," ($",greatest_increase_profits,")",sep='')
 
-# The greatest decrease in profits (date and amount) over the entire period
+# Print the greatest decrease in profits (date and amount) over the entire period
+print("Greatest Decrease in Profits: ",greatest_decrease_month," ($",greatest_decrease_profits,")",sep='')
 
-# Print
-# Financial Analysis
-# ----------------------------
-# Total Months: 86
-# Total: $22564198
-# Average Change: $-8311.11
-# Greatest Increase in Profits: Aug-16 ($1862002)
-# Greatest Decrease in Profits: Feb-14 ($-1825558) -->
+
+#Export text file with results
+file = 'analysis/budget_data_analysis.txt'
+with open(file, 'w') as output:
+    output.write("Financial Analysis\n")
+    output.write("----------------------------\n")
+    output.write("Total Months: " + str(month_counter))
+    output.write("\n")
+    output.write("Total: $" + str(net_profit_loss))
+    output.write("\n")
+    output.write("Average Change: $" + str(round((total_revenue_change - first_month)/(month_counter - 1),2)))
+    output.write("\n")
+    output.write("Greatest Increase in Profits: " + str(greatest_increase_month) + " ($" + str(greatest_increase_profits) +")\n")
+    output.write("Greatest Decrease in Profits: " + str(greatest_decrease_month) + " ($" + str(greatest_decrease_profits) +")")
