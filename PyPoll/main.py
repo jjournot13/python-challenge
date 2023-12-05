@@ -69,3 +69,19 @@ print(max(candidate_data, key=candidate_data.get))
 
 # print(candidates[winner])
 print("-------------------------")
+
+
+#Export text file with results
+file = 'analysis/election_data_analysis.txt'
+with open(file, 'w') as output:
+    output.write("Election Results\n")
+    output.write("-------------------------\n")
+    output.write("Total Votes: " + str(vote_counter))
+    output.write("\n")
+    output.write("-------------------------\n")
+    for k, v in candidate_data.items():
+    	output.write(str(k) + ": " + str(round(((v/vote_counter)*100),3)) + "% " + "(" + str(v) + ")\n")
+    output.write("-------------------------\n")
+    output.write(str(max(candidate_data, key=candidate_data.get)))
+    output.write("\n")
+    output.write("-------------------------\n")
